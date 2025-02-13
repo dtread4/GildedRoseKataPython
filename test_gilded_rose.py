@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from gilded_rose import Item, GildedRose, GenericGildedRoseItem
+from gilded_rose import *
 
 
 class GildedRoseTest(unittest.TestCase):
@@ -14,7 +14,9 @@ class GildedRoseTest(unittest.TestCase):
         quality_default = 50
 
         # Create the items to test and instantiate a Gilded Rose object
-        items = [Item("Conjured", sell_in_default, quality_default), Item("Random", sell_in_default, quality_default)]
+        item_1 = Item("Conjured", sell_in_default, quality_default)
+        item_2 = Item("Random", sell_in_default, quality_default)
+        items = [ConjuredItem(item_1), GenericGildedRoseItem(item_2)]
         gilded_rose = GildedRose(items)
 
         # Update the quality and grab the new items
@@ -42,7 +44,7 @@ class GildedRoseTest(unittest.TestCase):
         # Create items to test each day
         items = []
         for day in sell_in_days:
-            items.append(Item("Backstage pass", day, quality_default))
+            items.append(BackstagePass(Item("Backstage Pass", day, quality_default)))
 
         # Instantiate GildedRose and update quality
         gilded_rose = GildedRose(items)
@@ -63,8 +65,8 @@ class GildedRoseTest(unittest.TestCase):
         new_quality = 0
 
         # Create the test items
-        items = [Item("Backstage pass", sell_in_default, quality_one), Item("Backstage pass", sell_in_default,
-                                                                            quality_two)]
+        items = [BackstagePass(Item("Backstage Pass", sell_in_default, quality_one)),
+                 BackstagePass(Item("Backstage Pass", sell_in_default,quality_two))]
 
         # Instantiate GildedRose and update quality
         gilded_rose = GildedRose(items)
@@ -82,7 +84,7 @@ class GildedRoseTest(unittest.TestCase):
         default_quality = 50
 
         # Create the test object
-        item = GenericGildedRoseItem(Item("Aged Brie", default_sell_in, default_quality))
+        item = GenericGildedRoseItem(AgedBrie(Item("Aged Brie", default_sell_in, default_quality)))
 
         # Apply the method to update SellIn values
         item.update_sell_in()
@@ -95,7 +97,7 @@ class GildedRoseTest(unittest.TestCase):
 
     # example of test that checks for logical errors
     def test_sulfuras_should_not_decrease_quality(self):
-        items = [Item("Sulfuras", 5, 80)]
+        items = [Sulfuras(Item("Sulfuras", 5, 80))]
         gilded_rose = GildedRose(items)
         gilded_rose.update_quality()
         sulfuras_item = items[0]
@@ -105,7 +107,7 @@ class GildedRoseTest(unittest.TestCase):
 
     # example of test that checks for syntax errors
     def test_gilded_rose_list_all_items(self):
-        items = [Item("Sulfuras", 5, 80)]
+        items = [Sulfuras(Item("Sulfuras", 5, 80))]
         gilded_rose = GildedRose(items)
         all_items = gilded_rose.get_items()
         self.assertEqual(["Sulfuras"], all_items)

@@ -14,55 +14,6 @@ class Item:
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
 
 
-class ItemFactory:
-    def generate_aged_object(self, item):
-        """
-        Creates a new AgedBrie object
-        :return: The AgedBrie object
-        """
-        return AgedBrie(item)
-
-    def generate_backstage_object(self, item):
-        """
-        Creates a new BackstagePass object
-        :return: The BackStagePass object
-        """
-        return BackstagePass(item)
-
-    def generate_sulfuras_object(self, item):
-        """
-        Creates a new Sulfuras object
-        :return: The Sulfuras object
-        """
-        return Sulfuras(item)
-
-    def generate_conjured_object(self, item):
-        """
-        Creates a new Conjured object
-        :return: The Conjured object
-        """
-
-    def generate_generic_object(self, item):
-        """
-        Creates a GenericGildedRose object
-        :return: The new GenericGildedRose object
-        """
-
-    def create_new_item(self, item):
-        # Check if each special item is in the new item's name
-        if "Aged Brie" == item.name:
-            return self.generate_aged_object(item)
-        if "Backstage Pass" == item.name:
-            return self.generate_backstage_object(item)
-        if "Sulfuras" == item.name:
-            return self.generate_sulfuras_object(item)
-        if "Conjured" in item.name:
-            return self.generate_conjured_object(item)
-
-        # If this stage reached, return a generic object
-        return self.generate_generic_object(item)
-
-
 class GildedRoseItem(Item):
     def __init__(self, item):
         super().__init__(item.name, item.sell_in, item.quality)
@@ -196,7 +147,7 @@ class ConjuredItem(GildedRoseItem):
     def __init__(self, item):
         super().__init__(item)
         self.quality_reduction_multiple = 2
-        self.single_quality_reduction = super().single_quality_reduction * self.quality_reduction_multiple
+        self.single_quality_reduction = self.single_quality_reduction * self.quality_reduction_multiple
 
 
 class GildedRose(object):
@@ -217,38 +168,33 @@ class GildedRose(object):
 
     def update_quality(self):
         for item in self.items:
-            item_factory = ItemFactory()
-            working_item = item_factory.create_new_item(item)
-            working_item.update_quality()
+            item.update_quality()
 
-            # # OLD
-            # if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
-            #     if item.quality > 0:
-            #         if item.name != "Sulfuras, Hand of Ragnaros":
-            #             item.quality = item.quality - 1
-            # else:
-            #     if item.quality < 50:
-            #         item.quality = item.quality + 1
-            #         if item.name == "Backstage passes to a TAFKAL80ETC concert":
-            #             if item.sell_in < 11:
-            #                 if item.quality < 50:
-            #                     item.quality = item.quality + 1
-            #             if item.sell_in < 6:
-            #                 if item.quality < 50:
-            #                     item.quality = item.quality + 1
-            # if item.name != "Sulfuras, Hand of Ragnaros":
-            #     item.sell_in = item.sell_in - 1
-            # if item.sell_in < 0:
-            #     if item.name != "Aged Brie":
-            #         if item.name != "Backstage passes to a TAFKAL80ETC concert":
-            #             if item.quality > 0:
-            #                 if item.name != "Sulfuras, Hand of Ragnaros":
-            #                     item.quality = item.quality - 1
-            #         else:
-            #             item.quality = item.quality - item.quality
-            #     else:
-            #         if item.quality < 50:
-            #             item.quality = item.quality + 1
-
-    # Handle special rules
-    # Each item has its own special rule handler that handle special rules refers to
+# # OLD
+# if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
+#     if item.quality > 0:
+#         if item.name != "Sulfuras, Hand of Ragnaros":
+#             item.quality = item.quality - 1
+# else:
+#     if item.quality < 50:
+#         item.quality = item.quality + 1
+#         if item.name == "Backstage passes to a TAFKAL80ETC concert":
+#             if item.sell_in < 11:
+#                 if item.quality < 50:
+#                     item.quality = item.quality + 1
+#             if item.sell_in < 6:
+#                 if item.quality < 50:
+#                     item.quality = item.quality + 1
+# if item.name != "Sulfuras, Hand of Ragnaros":
+#     item.sell_in = item.sell_in - 1
+# if item.sell_in < 0:
+#     if item.name != "Aged Brie":
+#         if item.name != "Backstage passes to a TAFKAL80ETC concert":
+#             if item.quality > 0:
+#                 if item.name != "Sulfuras, Hand of Ragnaros":
+#                     item.quality = item.quality - 1
+#         else:
+#             item.quality = item.quality - item.quality
+#     else:
+#         if item.quality < 50:
+#             item.quality = item.quality + 1
