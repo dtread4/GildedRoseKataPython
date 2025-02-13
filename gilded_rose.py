@@ -14,15 +14,62 @@ class Item:
         return "%s, %s, %s" % (self.name, self.sell_in, self.quality)
 
 
+class ItemFactory:
+    def generate_aged_object(self, item):
+        """
+        Creates a new AgedBrie object
+        :return: The AgedBrie object
+        """
+        return AgedBrie(item)
+
+    def generate_backstage_object(self, item):
+        """
+        Creates a new BackstagePass object
+        :return: The BackStagePass object
+        """
+        return BackstagePass(item)
+
+    def generate_sulfuras_object(self, item):
+        """
+        Creates a new Sulfuras object
+        :return: The Sulfuras object
+        """
+        return Sulfuras(item)
+
+    def generate_conjured_object(self, item):
+        """
+        Creates a new Conjured object
+        :return: The Conjured object
+        """
+
+    def generate_generic_object(self, item):
+        """
+        Creates a GenericGildedRose object
+        :return: The new GenericGildedRose object
+        """
+
+    def create_new_item(self, item):
+        # Check if each special item is in the new item's name
+        if "Aged Brie" == item.name:
+            return self.generate_aged_object(item)
+        if "Backstage Pass" == item.name:
+            return self.generate_backstage_object(item)
+        if "Sulfuras" == item.name:
+            return self.generate_sulfuras_object(item)
+        if "Conjured" in item.name:
+            return self.generate_conjured_object(item)
+
+        # If this stage reached, return a generic object
+        return self.generate_generic_object(item)
+
+
 class GildedRoseItem(Item):
-    """
-    Parent class all Gilded Rose items will inherit from
-    """
     def __init__(self, item):
         super().__init__(item.name, item.sell_in, item.quality)
         self.single_sell_in_reduction = 1
         self.single_quality_reduction = 1
         self.last_sell_in_days = 0
+        self.min_quality = 0
         self.max_quality = 50
 
     def reduce_sell_in(self):
@@ -33,21 +80,30 @@ class GildedRoseItem(Item):
         self.sell_in -= self.single_sell_in_reduction
         return self.sell_in
 
+    def check_min_quality(self):
+        """
+        Checks that quality is not below the minimum value
+        :return: The quality value of the item after checking
+        """
+        self.quality = max(self.quality, self.min_quality)
+        return self.quality
+
+    def check_max_quality(self):
+        """
+        Makes sure that quality is never above the maximum
+        :return: The quality value of the item after checking
+        """
+        self.quality = min(self.quality, self.max_quality)
+        return self.quality
+
     def reduce_quality(self):
         """
         Reduces the quality once
         :return: The new quality
         """
         # Prevent quality from being reduced below 0
-        self.quality = max(0, self.quality - self.single_quality_reduction)
-        return self.quality
-
-    def set_max_quality(self):
-        """
-        Makes sure that quality is never above the maximum
-        :return: The quality value of the item after checking
-        """
-        self.quality = min(self.quality, self.max_quality)
+        self.quality = self.quality - self.single_quality_reduction
+        self.check_min_quality()
         return self.quality
 
     def update_sell_in(self):
@@ -73,16 +129,75 @@ class GildedRoseItem(Item):
         if self.sell_in < self.last_sell_in_days:
             self.reduce_quality()
 
+        # Check that max quality is not violated
+        self.check_max_quality()
+
         # Return updated quality
         return self.quality
 
 
 class GenericGildedRoseItem(GildedRoseItem):
-    """
-    Class for generic Gilded Rose items
-    """
     def __init__(self, item):
         super().__init__(item)
+
+
+class AgedBrie(GildedRoseItem):
+    def __init__(self, item):
+        super().__init__(item)
+        self.quality_increase = 1
+
+    def update_quality(self):
+        """
+        Updates the quality. For Aged Brie, this means adding one
+        :return: The updated quality value
+        """
+        self.quality += self.quality_increase
+        self.check_max_quality()
+        return self.quality
+
+
+class BackstagePass(GildedRoseItem):
+    def __init__(self, item):
+        super().__init__(item)
+        self.default_sell_value = 1
+        self.bonus_sell_value = 2
+        self.bonus_2_sell_value = 3
+        self.first_bonus_day = 10
+        self.second_bonus_day = 5
+        self.min_quality = 0
+
+    def update_quality(self):
+        """
+        Updates the quality. For Backstage Passes, this means increasing by one generally,
+        but this may change depending on how many days are left until the concert
+        :return: The updated quality value
+        """
+        if self.sell_in > self.first_bonus_day:
+            self.quality += self.default_sell_value
+        elif self.second_bonus_day < self.sell_in <= self.first_bonus_day:
+            self.quality += self.bonus_sell_value
+        elif 0 <= self.sell_in <= self.second_bonus_day:
+            self.quality += self.bonus_2_sell_value
+        else:  # sell in must be less than 0
+            self.quality = self.min_quality
+        return self.quality
+
+
+class Sulfuras(GildedRoseItem):
+    def __init__(self, item):
+        super().__init__(item)
+        self.quality = 80
+        self.min_quality = self.quality
+        self.max_quality = self.quality
+        self.single_quality_reduction = 0
+        self.single_sell_in_reduction = 0
+
+
+class ConjuredItem(GildedRoseItem):
+    def __init__(self, item):
+        super().__init__(item)
+        self.quality_reduction_multiple = 2
+        self.single_quality_reduction = super().single_quality_reduction * self.quality_reduction_multiple
 
 
 class GildedRose(object):
