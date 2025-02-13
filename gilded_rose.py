@@ -205,13 +205,22 @@ class GildedRose(object):
         # DO NOT CHANGE THIS ATTRIBUTE!!!
         self.items = items
 
+    def get_items(self):
+        """
+        Creates a list of all item names in the GildedRose object
+        :return: The list of all item name Strings
+        """
+        all_item_names = []
+        for item in self.items:
+            all_item_names.append(item.name)
+        return all_item_names
+
     def update_quality(self):
         for item in self.items:
             item_factory = ItemFactory()
             working_item = item_factory.create_new_item(item)
             working_item.update_quality()
-            item.quality = working_item.quality
-            item.sell_in = working_item.sell_in
+
             # # OLD
             # if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
             #     if item.quality > 0:
