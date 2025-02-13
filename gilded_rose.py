@@ -190,7 +190,6 @@ class Sulfuras(GildedRoseItem):
         self.min_quality = self.quality
         self.max_quality = self.quality
         self.single_quality_reduction = 0
-        self.single_sell_in_reduction = 0
 
 
 class ConjuredItem(GildedRoseItem):
@@ -208,10 +207,11 @@ class GildedRose(object):
 
     def update_quality(self):
         for item in self.items:
-            this_item = GenericGildedRoseItem(item)
-            this_item.update_quality()
-            item.quality = this_item.quality
-
+            item_factory = ItemFactory()
+            working_item = item_factory.create_new_item(item)
+            working_item.update_quality()
+            item.quality = working_item.quality
+            item.sell_in = working_item.sell_in
             # # OLD
             # if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert":
             #     if item.quality > 0:
