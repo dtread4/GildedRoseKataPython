@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from gilded_rose import Item, GildedRose
+from gilded_rose import Item, GildedRose, GenericGildedRoseItem
 
 
 class GildedRoseTest(unittest.TestCase):
@@ -27,7 +27,7 @@ class GildedRoseTest(unittest.TestCase):
         difference_random = quality_default - random_item.quality
 
         # Test the difference in conjured quality is double the difference in random item quality
-        self.assertEquals(difference_conjured, difference_random * 2)
+        self.assertEqual(difference_conjured, difference_random * 2)
 
     # 2. LOGICAL - Test that "Backstage passes" increase in quality by when 10 days or less until concert date
     # Assumes "sell-by" date is the same as the concert date
@@ -51,7 +51,7 @@ class GildedRoseTest(unittest.TestCase):
         # Check that all items have increased by two
         differences = [item.quality - quality_default for item in items]
         for difference in differences:
-            self.assertEquals(difference, expected_difference)
+            self.assertEqual(difference, expected_difference)
 
     # 3. LOGICAL - Test that "Backstage passes" have a value of zero no matter what their quality is once sell in days
     # goes below zero (the concert has passed)
@@ -72,7 +72,7 @@ class GildedRoseTest(unittest.TestCase):
 
         # Check both have a quality of 0
         for item in items:
-            self.assertEquals(item.quality, new_quality)
+            self.assertEqual(item.quality, new_quality)
 
     # 4. SYNTAX  - Check that the system updates the SellIn value for an item; this method is not yet implemented
     def test_sell_in_updates(self):
@@ -82,16 +82,13 @@ class GildedRoseTest(unittest.TestCase):
         default_quality = 50
 
         # Create the test object
-        items = [Item("Aged Brie", default_sell_in, default_quality)]
-
-        # Instantiate GildedRose and update quality
-        gilded_rose = GildedRose(items)
+        item = GenericGildedRoseItem(Item("Aged Brie", default_sell_in, default_quality))
 
         # Apply the method to update SellIn values
-        gilded_rose.update_sell_in()
+        item.update_sell_in()
 
         # Check that the new sell in value is correct
-        self.assertEquals(items[0].quality, new_sell_in)
+        self.assertEqual(item.sell_in, new_sell_in)
 
     # END DAVID'S TESTS
     # ~~~~~~
@@ -102,17 +99,16 @@ class GildedRoseTest(unittest.TestCase):
         gilded_rose = GildedRose(items)
         gilded_rose.update_quality()
         sulfuras_item = items[0]
-        self.assertEquals(80, sulfuras_item.quality)
-        self.assertEquals(4, sulfuras_item.sell_in)
-        self.assertEquals("Sulfuras", sulfuras_item.name)
+        self.assertEqual(80, sulfuras_item.quality)
+        self.assertEqual(4, sulfuras_item.sell_in)
+        self.assertEqual("Sulfuras", sulfuras_item.name)
 
     # example of test that checks for syntax errors
     def test_gilded_rose_list_all_items(self):
         items = [Item("Sulfuras", 5, 80)]
         gilded_rose = GildedRose(items)
         all_items = gilded_rose.get_items()
-        self.assertEquals(["Sulfuras"], all_items)
-
+        self.assertEqual(["Sulfuras"], all_items)
 
 
 if __name__ == '__main__':
